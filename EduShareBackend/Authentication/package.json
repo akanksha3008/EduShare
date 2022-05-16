@@ -1,0 +1,25 @@
+{
+  "name": "authentication",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "author": "akanksha3008",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "body-parser": "^1.20.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.1",
+    "firebase": "^8.10.0",
+    "firebase-admin": "^8.13.0",
+    "firebase-functions": "^3.14.1"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@babel/helper-compilation-targets": "^7.17.10"
+  }
+}
