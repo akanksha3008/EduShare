@@ -5,6 +5,6 @@ const port = 3000;
 
 app.use(bodyParser.json());
 
-import routes from '../apis/routes';
+import { routes } from './apis/routes.js';
 routes(app);
 app.listen(port, () => console.log(`App starting on port ${port}`));
