@@ -23,6 +23,8 @@ const app = firebase.initializeApp(firebaseConfig);
 
 // Initialize Firebase Authentication and get a reference to the service
 const auth = firebase.auth();
+const db = firebase.firestore();
+
 export const loginUser = function (req, res) {
 
     var emailid = req.query.username;
@@ -43,31 +45,36 @@ export const loginUser = function (req, res) {
 export const signUpUser = async function (req, res) {
     var userEmail = req.body.email;
     var userPass = req.body.password;
-    // var finalPass = encryptUserPassword(userPass);
     var name = req.body.name;
     var college = req.body.collegeName;
-    console.log(userEmail + "..." + userPass + "..." + name + "..." + college);
-    // generate salt to hash password
     const salt = await bcrypt.genSalt(10);
-    // now we set user password to hashed password
     var password = await bcrypt.hash(userPass, salt);
-    console.log(password);
     auth.createUserWithEmailAndPassword(userEmail, password).then(user => {
-        console.log("user created..");
-        res.status(201).send(user);
-    }).catch(function (error) {
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        res.send(errorMessage);
-    });
+        return user;
+    }).then(user => {
+        console.log("Received user object is...");
+        const obj = {
+            userid: user.user.uid,
+            name: name,
+            institute: college,
+            username: user.user.email,
+            download_count: 0,
+            upload_count: 0,
+            points: 0
+        };
+
+        var userDataReference = db.collection("Users");
+        userDataReference.doc().set(obj).then(function () {
+            console.log("Details added to firestore");
+            res.status(201).send(user);
+        }).catch(function (error) {
+            console.log(error);
+            res.status(500).send(error.message);
+        });
+    })
+        .catch(function (error) {
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            res.status(500).send(errorMessage);
+        });
 }
-
-// function encryptUserPassword(password) {
-//     const saltRounds = 10;
-//     bcrypt.genSalt(saltRounds, function (err, salt) {
-//         bcrypt.hash(password, salt, function (err, hash) {
-
-//             console.log(hash);
-//         });
-//     });
-// }
