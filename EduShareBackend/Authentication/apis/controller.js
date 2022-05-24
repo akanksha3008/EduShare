@@ -1,10 +1,10 @@
 'use strict'
 
-import axios from 'axios';
 // import { firebase } from '../firebase.js'
 // import { getAuth, signInWithCustomToken } from "firebase/auth";
 // import initializeApp from "firebase/app";
 import firebase from "firebase";
+import bcrypt from "bcrypt";
 
 import getAuth from "firebase/auth";
 const firebaseConfig = {
@@ -40,13 +40,19 @@ export const loginUser = function (req, res) {
         });
 };
 
-export const signUpUser = function (req, res) {
-    var userEmail = req.body.emailId;
+export const signUpUser = async function (req, res) {
+    var userEmail = req.body.email;
     var userPass = req.body.password;
+    // var finalPass = encryptUserPassword(userPass);
     var name = req.body.name;
     var college = req.body.collegeName;
     console.log(userEmail + "..." + userPass + "..." + name + "..." + college);
-    auth.createUserWithEmailAndPassword(userEmail, userPass).then(user => {
+    // generate salt to hash password
+    const salt = await bcrypt.genSalt(10);
+    // now we set user password to hashed password
+    var password = await bcrypt.hash(userPass, salt);
+    console.log(password);
+    auth.createUserWithEmailAndPassword(userEmail, password).then(user => {
         console.log("user created..");
         res.status(201).send(user);
     }).catch(function (error) {
@@ -55,3 +61,13 @@ export const signUpUser = function (req, res) {
         res.send(errorMessage);
     });
 }
+
+// function encryptUserPassword(password) {
+//     const saltRounds = 10;
+//     bcrypt.genSalt(saltRounds, function (err, salt) {
+//         bcrypt.hash(password, salt, function (err, hash) {
+
+//             console.log(hash);
+//         });
+//     });
+// }
